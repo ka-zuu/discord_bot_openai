@@ -47,9 +47,9 @@ async def on_message(message):
         # 会話履歴を初期化
         conversations = [{"role": "system", "content": PROMPT}]
         # メンションされたメッセージを取得
-        #msg = message.content.replace(f"<@!{bot.user.id}>", "").strip()
+        # msg = message.content.replace(f"<@!{bot.user.id}>", "").strip()
         # メッセージを会話履歴に追加
-        conversations.insert(1,{"role": "user", "content": message.content})
+        conversations.insert(1, {"role": "user", "content": message.content})
 
         # 返信元のメッセージを保存しておく
         original_message = message
@@ -59,11 +59,11 @@ async def on_message(message):
             message = await message.channel.fetch_message(message.reference.message_id)
             # 返信がBotの場合はrole:assistant、ユーザーの場合はrole:userとして会話履歴に追加
             if message.author == bot.user:
-                conversations.insert(1,{"role": "assistant", "content": message.content})
+                conversations.insert(
+                    1, {"role": "assistant", "content": message.content}
+                )
             else:
-                conversations.insert(1,{"role": "user", "content": message.content})
-
-        print(conversations)
+                conversations.insert(1, {"role": "user", "content": message.content})
 
         # 会話履歴の最初にPromptを追加
         conversations.insert(0, {"role": "system", "content": PROMPT})
