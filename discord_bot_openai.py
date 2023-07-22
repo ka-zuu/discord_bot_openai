@@ -44,40 +44,37 @@ async def on_message(message):
         return
 
     if bot.user in message.mentions:
-        # 会話履歴を初期化
-        conversations = [{"role": "system", "content": PROMPT}]
-        # メンションされたメッセージを取得
-        # msg = message.content.replace(f"<@!{bot.user.id}>", "").strip()
-        # メッセージを会話履歴に追加
-        conversations.insert(1, {"role": "user", "content": message.content})
+        response = await create_response(message)
+        await message.reply(response)
 
-        # 返信元のメッセージを保存しておく
-        original_message = message
 
-        # メッセージが返信か再帰的に確認し、返信元のメッセージをすべて会話履歴に追加
-        while message.reference:
-            message = await message.channel.fetch_message(message.reference.message_id)
-            # 返信がBotの場合はrole:assistant、ユーザーの場合はrole:userとして会話履歴に追加
-            if message.author == bot.user:
-                conversations.insert(
-                    1, {"role": "assistant", "content": message.content}
-                )
-            else:
-                conversations.insert(1, {"role": "user", "content": message.content})
+async def create_response(message):
+    # 会話履歴を初期化
+    conversations = [{"role": "system", "content": PROMPT}]
+    # メッセージを会話履歴に追加
+    conversations.insert(1, {"role": "user", "content": message.content})
 
-        # 会話履歴の最初にPromptを追加
-        conversations.insert(0, {"role": "system", "content": PROMPT})
+    # メッセージが返信か再帰的に確認し、返信元のメッセージをすべて会話履歴に追加
+    while message.reference:
+        message = await message.channel.fetch_message(message.reference.message_id)
+        # 返信がBotの場合はrole:assistant、ユーザーの場合はrole:userとして会話履歴に追加
+        if message.author == bot.user:
+            conversations.insert(1, {"role": "assistant", "content": message.content})
+        else:
+            conversations.insert(1, {"role": "user", "content": message.content})
 
-        # OpenAIに問い合わせ
-        response = openai.ChatCompletion.create(
-            model=MODEL,
-            messages=conversations,
-            max_tokens=2048,
-            temperature=0.8,
-        )
+    # 会話履歴の最初にPromptを追加
+    conversations.insert(0, {"role": "system", "content": PROMPT})
 
-        # OpenAIの応答を送信
-        await original_message.reply(response.choices[0]["message"]["content"].strip())
+    # OpenAIに問い合わせ
+    response = openai.ChatCompletion.create(
+        model=MODEL,
+        messages=conversations,
+        max_tokens=2048,
+        temperature=0.8,
+    )
+
+    return response.choices[0]["message"]["content"]
 
 
 bot.run(TOKEN)
