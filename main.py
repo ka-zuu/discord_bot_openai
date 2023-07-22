@@ -8,11 +8,12 @@ import openai
 import json
 import os
 
+load_dotenv()
+
 # OpenAIの設定
 openai.api_key = os.getenv("OPENAI_API_KEY")
-MODEL = "gpt-3.5-turbo"
-#MODEL="gpt-4"
-PROMPT = "あなたは家庭用のチャットツールに参加します。日常の会話や質問に受け答えをしてください。落ち着きのあるキャラクターを演じてください。語尾が「プリ」で終わるようにしてください。「だプリ」「だプリね」「するプリ」「プリか？」のような感じです。適度な改行を入れるようにしてください"
+MODEL=os.getenv("OPENAI_MODEL")
+PROMPT = os.getenv("OPENAI_PROMPT")
 
 # Discord Botの設定
 intents = discord.Intents.default()
@@ -56,18 +57,6 @@ async def on_message(message):
         # OpenAIの応答を送信
         await message.reply(response.choices[0]["message"]["content"].strip())
 
-
-# @bot.event
-# async def on_message(message):
-#    if message.author == bot.user:
-#        return
-#
-#    await message.channel.send('Hello!')
-
-
-# @bot.command(name="hello", description="挨拶を返します")
-# async def hello(ctx):
-#    await ctx.send("Hello!")
 
 
 bot.run(TOKEN)
