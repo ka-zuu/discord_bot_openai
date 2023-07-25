@@ -9,6 +9,7 @@ import discord
 import openai
 import json
 import os
+import requests
 
 load_dotenv()
 
