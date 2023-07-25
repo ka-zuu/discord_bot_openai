@@ -47,6 +47,18 @@ async def on_message(message):
         response = await create_response(message)
         await message.reply(response)
 
+    await bot.process_commands(message)
+
+
+# サーバのグローバルIPアドレスを返すコマンド
+@bot.command()
+async def gip(ctx):
+    try:
+        global_ip = requests.get('https://api.ipify.org').text
+        await ctx.send(f'実行サーバのグローバルIPアドレスは {global_ip} です')
+    except Exception as e:
+        await ctx.send(f'エラーが発生しました: {e}')
+
 
 async def create_response(message):
     # 会話履歴を初期化
