@@ -45,7 +45,8 @@ async def on_message(message):
         return
 
     if bot.user in message.mentions:
-        response = await create_response(message)
+        async with message.channel.typing():
+            response = await create_response(message)
         await message.reply(response)
 
     await bot.process_commands(message)
