@@ -77,9 +77,6 @@ async def create_response(message):
         else:
             conversations.insert(1, {"role": "user", "content": message.content})
 
-    # 会話履歴の最初にPromptを追加
-    conversations.insert(0, {"role": "system", "content": PROMPT})
-
     # OpenAIに問い合わせ
     response = openai.ChatCompletion.create(
         model=MODEL,
