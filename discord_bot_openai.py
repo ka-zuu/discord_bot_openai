@@ -53,7 +53,11 @@ class OpenAIDiscordBot(commands.Bot):
                 # 会話履歴を初期化
                 conversations = [{"role": "system", "content": self.prompt}]
                 # メッセージを会話履歴に追加
-                conversations.insert(1, {"role": "user", "content": message.content})
+                if message.attachments:
+                    image_url = message.attachments[0].url
+                    conversations.insert(1, {"role": "user", "content": [{"type": "text", "text": message.content}, {"type": "image_url", "image_url": {"url": image_url}}]})
+                else:
+                    conversations.insert(1, {"role": "user", "content": message.content})
 
                 # メッセージが返信か再帰的に確認し、返信元のメッセージをすべて会話履歴に追加
                 while message.reference:
